@@ -449,8 +449,8 @@ class Twopoppy():
     def get_gas_sources_L(self, update=True):
         "implicit gas surface density sources (will be multiplied with sig_g) [1 / s]"
         if update:
-            #self._gas_sources_L = np.zeros_like(self.r)
-            self._gas_sources_L = -3 * self.nu_dw/(4 * (self.leverarm-1) * self.r**2)
+            self._gas_sources_L = np.zeros_like(self.r)
+            #self._gas_sources_L = -3 * self.nu_dw/(4 * (self.leverarm-1) * self.r**2)
         return self._gas_sources_L
     gas_sources_L = property(get_dust_sources_L)
 
@@ -677,7 +677,7 @@ class Twopoppy():
         h = np.ones(nr)
         K = self.gas_sources_K * x
         L = self.gas_sources_L * x
-        v_gas = self.v_gas_dw #np.zeros(nr)
+        v_gas = np.zeros(nr) #self.v_gas_dw #np.zeros(nr)
 
         u = impl_donorcell_adv_diff_delta(x, D, v_gas, g, h, K, L, u, dt, *self.gas_bc(x, g, u, h))
 
