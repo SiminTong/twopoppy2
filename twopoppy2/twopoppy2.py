@@ -691,8 +691,8 @@ class Twopoppy():
             g[1:] / h[1] * u[1:] - g[:-1] / h[:-1] * u[:-1]) / (x[1:] - x[:-1])
         mask = u_flux > 0.0
         imask = u_flux <= 0.0
-        v_gas[mask] = u_flux[mask] / u[np.maximum(0, np.where(mask)[0] - 1)] + v_gas[mask]
-        v_gas[imask] = u_flux[imask] / u[np.minimum(nr - 1, np.where(imask)[0] + 1)] + v_gas[imask]
+        v_gas[mask] = u_flux[mask] / u[np.maximum(0, np.where(mask)[0] - 1)] #+ v_gas[mask]
+        v_gas[imask] = u_flux[imask] / u[np.minimum(nr - 1, np.where(imask)[0] + 1)] #+ v_gas[imask]
 
         # return values
 
