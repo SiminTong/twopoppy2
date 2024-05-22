@@ -86,6 +86,12 @@ class Twopoppy():
     alpha_gas = 1e-3
     "gas viscosity alpha parameter"
 
+    alpha_dw = 1e-3
+    'gas alpha for disc winds'
+
+    leverarm = 3
+    'lever arm for the magnetised wind'
+
     alpha_diff = 1e-3
     "alpha value to determine dust diffusion"
 
@@ -136,6 +142,7 @@ class Twopoppy():
     _stokesregime = 1
     _grid = None
     _cs = None
+    _nu_dw = None
     _hp = None
     _omega = None
     _do_growth = True
@@ -145,6 +152,7 @@ class Twopoppy():
     _Diff_i = None
     _gas_viscosity = None
     _gamma = None
+    _v_gas_dw = None
     _v_bar = None
     _v_bar_i = None
 
@@ -199,7 +207,7 @@ class Twopoppy():
         # after a first update, we need to calculate v_gas and then recalculate
         # v_bar, therefore we call update_all twice
 
-        self.v_gas = np.zeros_like(self.r)
+        #np.zeros_like(self.r)
         self.update_all()
 
         if self.evolve_gas:
@@ -215,6 +223,7 @@ class Twopoppy():
             self.snapshots = np.hstack((0.0, self.snapshots))
 
     def _initialize_data(self):
+        '''stored data '''
         self.data = {}
         self.data['sigma_g'] = None
         self.data['sigma_d'] = None
@@ -237,6 +246,8 @@ class Twopoppy():
         self.get_gas_sources_K(update=True)
         self.get_gas_sources_L(update=True)
 
+        self.get_nu_dw(update =True)
+
         self.get_omega(update=True)
         self.get_cs(update=True)
         self.get_hp(update=True)
@@ -246,6 +257,8 @@ class Twopoppy():
         self.get_gamma(update=True)
 
         self.update_size_limits(0.0)
+
+        self.get_v_gas_dw(update=True)
 
         self.get_v_bar(update=True)
         self.get_v_bar_i(update=True)
@@ -337,6 +350,22 @@ class Twopoppy():
         else:
             self._do_growth = value
 
+    def get_nu_dw(self, update =False):
+        '''nu_dw = alpha_dw * cs * h'''
+        if update:
+            self._nu_dw = self.alpha_dw * self.cs * self.hp
+        return self._nu_dw
+
+    nu_dw = property(get_nu_dw)
+
+    def get_v_gas_dw(self, update=False):
+        '''radial velocity by the magnetised wind'''
+        if update:
+            self._v_gas_dw = -3./2. * self.nu_dw / self.r
+        return self._v_gas_dw
+    
+    v_gas_dw = property(get_v_gas_dw)
+
     @property
     def evolve_gas(self):
         "whether or not to evolve the gas surface density [bool]"
@@ -414,7 +443,8 @@ class Twopoppy():
     def get_gas_sources_L(self, update=True):
         "implicit gas surface density sources (will be multiplied with sig_g) [1 / s]"
         if update:
-            self._gas_sources_L = np.zeros_like(self.r)
+            #self._gas_sources_L = np.zeros_like(self.r)
+            self._gas_sources_L = -3 * self.nu_dw/(4 * (self.leverarm-1) * self.r**3)
         return self._gas_sources_L
     gas_sources_L = property(get_dust_sources_L)
 
@@ -641,7 +671,7 @@ class Twopoppy():
         h = np.ones(nr)
         K = self.gas_sources_K * x
         L = self.gas_sources_L * x
-        v_gas = np.zeros(nr)
+        v_gas = self.v_gas_dw #np.zeros(nr)
 
         u = impl_donorcell_adv_diff_delta(x, D, v_gas, g, h, K, L, u, dt, *self.gas_bc(x, g, u, h))
 
@@ -655,8 +685,8 @@ class Twopoppy():
             g[1:] / h[1] * u[1:] - g[:-1] / h[:-1] * u[:-1]) / (x[1:] - x[:-1])
         mask = u_flux > 0.0
         imask = u_flux <= 0.0
-        v_gas[mask] = u_flux[mask] / u[np.maximum(0, np.where(mask)[0] - 1)]
-        v_gas[imask] = u_flux[imask] / u[np.minimum(nr - 1, np.where(imask)[0] + 1)]
+        v_gas[mask] = u_flux[mask] / u[np.maximum(0, np.where(mask)[0] - 1)] + v_gas[mask]
+        v_gas[imask] = u_flux[imask] / u[np.minimum(nr - 1, np.where(imask)[0] + 1)] + v_gas[imask]
 
         # return values
 
