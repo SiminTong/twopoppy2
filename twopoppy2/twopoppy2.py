@@ -241,16 +241,18 @@ class Twopoppy():
         This will be used in the initialization, but can also be used later
         to ensure all quantities are up-to-date.
         """
+
+        self.get_omega(update=True)
+        self.get_cs(update=True)
+        self.get_hp(update=True)
+        self.get_nu_dw(update =True)
+
         self.get_dust_sources_K(update=True)
         self.get_dust_sources_L(update=True)
         self.get_gas_sources_K(update=True)
         self.get_gas_sources_L(update=True)
 
-        self.get_nu_dw(update =True)
-
-        self.get_omega(update=True)
-        self.get_cs(update=True)
-        self.get_hp(update=True)
+        
 
         self.get_rho_mid(update=True)
         self.get_gas_viscosity(update=True)
