@@ -380,11 +380,12 @@ class Twopoppy():
         else:
             self._evolve_gas = value
 
-    def set_all_alpha(self, value):
+    def set_all_alpha(self, alpha_ss, alpha_dw):
         "helper to set all alphas to the same values"
-        self.alpha_gas = value * np.ones_like(self.r)
-        self.alpha_diff = value * np.ones_like(self.r)
-        self.alpha_turb = value * np.ones_like(self.r)
+        self.alpha_gas = alpha_ss * np.ones_like(self.r)
+        self.alpha_diff = alpha_ss * np.ones_like(self.r)
+        self.alpha_turb = alpha_ss * np.ones_like(self.r)
+        self.alpha_dw = alpha_dw * np.ones_like(self.r)
 
     def get_omega(self, update=False):
         "Keplerian frequency [1/s]"
