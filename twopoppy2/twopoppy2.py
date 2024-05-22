@@ -386,6 +386,9 @@ class Twopoppy():
         self.alpha_diff = alpha_ss * np.ones_like(self.r)
         self.alpha_turb = alpha_ss * np.ones_like(self.r)
         self.alpha_dw = alpha_dw * np.ones_like(self.r)
+    
+    def set_leverarm(self, leverarm):
+        self.leverarm = leverarm
 
     def get_omega(self, update=False):
         "Keplerian frequency [1/s]"
@@ -447,7 +450,7 @@ class Twopoppy():
         "implicit gas surface density sources (will be multiplied with sig_g) [1 / s]"
         if update:
             #self._gas_sources_L = np.zeros_like(self.r)
-            self._gas_sources_L = -3 * self.nu_dw/(4 * (self.leverarm-1) * self.r**3)
+            self._gas_sources_L = -3 * self.nu_dw/(4 * (self.leverarm-1) * self.r**2)
         return self._gas_sources_L
     gas_sources_L = property(get_dust_sources_L)
 
