@@ -207,7 +207,7 @@ class Twopoppy():
         # after a first update, we need to calculate v_gas and then recalculate
         # v_bar, therefore we call update_all twice
 
-        #np.zeros_like(self.r)
+        self.v_gas = np.zeros_like(self.r)
         self.update_all()
 
         if self.evolve_gas:
