@@ -135,7 +135,7 @@ class Twopoppy_w():
             rmax = kwargs.pop('rmax', 1000 * au)
             nr = kwargs.pop('nr', 300)
             ri = np.logspace(np.log10(rmin), np.log10(rmax), nr)
-            self._grid = Grid(ri)
+            self._grid = Grid2(ri)
 
         for key, value in kwargs.items():
             if hasattr(self, '_' + key):
