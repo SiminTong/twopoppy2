@@ -12,7 +12,7 @@ gasstep_result = namedtuple('gasstep_result', ['sigma', 'dt', 'v_gas'])
 size_limits = namedtuple('size_limits', ['St_0', 'St_1', 'a_1', 'a_dr', 'a_fr', 'a_df', 'mask_drift'])
 
 
-class Grid():
+class Grid2():
     "Grid object with grid centers r and grid interfaces ri"
     r = None
     ri = None
@@ -57,7 +57,7 @@ class Grid():
         return np.interp(self.ri, self.r, x, left=x[0], right=x[-1])
 
 
-class Twopoppy():
+class Twopoppy_w():
     """
     A new twopoppy implementation
     """
