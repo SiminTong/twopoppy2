@@ -324,11 +324,11 @@ class Twopoppy_w():
         else:
             self._do_growth = value
 
-    def get_nu_dw(self, update =False):
+    def get_nu_dw(self, update =True):
         '''nu_dw = alpha_dw * cs * h'''
         if update:
-            self._nu_dw = self.alpha_dw * self.cs * self.hp
-        return self._nu_dw
+            self.nu_dw = self.alpha_dw * self.cs * self.hp
+        return self.nu_dw
 
     nu_dw = property(get_nu_dw)
 
@@ -352,12 +352,12 @@ class Twopoppy_w():
         else:
             self._evolve_gas = value
 
-    def set_all_alpha(self, alpha_ss, alpha_dw):
-        "helper to set all alphas to the same values"
-        self.alpha_gas = alpha_ss * np.ones_like(self.r)
-        self.alpha_diff = alpha_ss * np.ones_like(self.r)
-        self.alpha_turb = alpha_ss * np.ones_like(self.r)
-        self.alpha_dw = alpha_dw * np.ones_like(self.r)
+    #def set_all_alpha(self, alpha_ss, alpha_dw):
+    #    "helper to set all alphas to the same values"
+    #    self.alpha_gas = alpha_ss * np.ones_like(self.r)
+    #    self.alpha_diff = alpha_ss * np.ones_like(self.r)
+    #    self.alpha_turb = alpha_ss * np.ones_like(self.r)
+    #    self.alpha_dw = alpha_dw * np.ones_like(self.r)
     
     #@leverarm.setter
     #def leverarm(self, value):
