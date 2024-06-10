@@ -346,6 +346,8 @@ class Twopoppy_w():
     
     def set_leverarm(self, leverarm):
         self.leverarm = leverarm
+    
+    leverarm= property(set_leverarm)
 
     def get_omega(self, update=False):
         "Keplerian frequency [1/s]"
@@ -409,7 +411,7 @@ class Twopoppy_w():
             #self._gas_sources_L = np.zeros_like(self.r)
             self._gas_sources_L = -3 * self.nu_dw/(4 * (self.leverarm-1) * self.r**2)
         return self._gas_sources_L
-    gas_sources_L = property(get_dust_sources_L)
+    gas_sources_L = property(get_gas_sources_L)
 
     def get_rho_mid(self, update=False):
         "mid-plane gas density [g/cm^2]"
