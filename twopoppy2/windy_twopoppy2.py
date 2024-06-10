@@ -359,13 +359,14 @@ class Twopoppy_w():
         self.alpha_turb = alpha_ss * np.ones_like(self.r)
         self.alpha_dw = alpha_dw * np.ones_like(self.r)
     
-    def set_leverarm(self, value):
+    @leverarm.setter
+    def leverarm(self, value):
         if value is None:
             self.leverarm = 3
         else:
             self.leverarm = value
     
-    leverarm= property(set_leverarm)
+    leverarm= property(leverarm)
 
     def get_omega(self, update=False):
         "Keplerian frequency [1/s]"
