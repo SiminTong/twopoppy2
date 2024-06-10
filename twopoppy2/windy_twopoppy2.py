@@ -64,7 +64,15 @@ class Twopoppy_w():
 
     snapshots = np.hstack((0, np.logspace(2, np.log10(5e6), 50) * year))
     "the times at which to store snapshots"
-    def __init__(self):
+    def __init__(self, **kwargs):
+
+        if '_grid' not in kwargs and 'grid' not in kwargs:
+            rmin = kwargs.pop('rmin', 0.1 * au)
+            rmax = kwargs.pop('rmax', 1000 * au)
+            nr = kwargs.pop('nr', 300)
+            ri = np.logspace(np.log10(rmin), np.log10(rmax), nr)
+            self._grid = Grid2(ri)
+
         self.M_star = M_sun       #stellar mass [g]
         self.sigma_g = None       #dust surface density [g/cm^2]
         self.sigma_d = None       #dust surface density [g/cm^2]
@@ -90,8 +98,15 @@ class Twopoppy_w():
         self._dust_floor = self._floor
         self._gas_floor = self._floor
         self._CFL = 0.4
-    "explicit: CFL number. Implicit: allowed the relative change in the quantity"
 
+        self.gas_bc = None
+        self.dust_bc = None
+        "explicit: CFL number. Implicit: allowed the relative change in the quantity"
+
+        if self.gas_bc is None:
+            self.gas_bc = self.gas_bc_constant_gradient
+        if self.dust_bc is None:
+            self.dust_bc = self.dust_bc_zero_d2g_gradient
     # the attributes belonging to properties
 
     _a_0 = 1e-5
@@ -113,42 +128,42 @@ class Twopoppy_w():
     _v_bar = None
     _v_bar_i = None
 
-    gas_bc = None
-    dust_bc = None
+    #gas_bc = None
+    #dust_bc = None
 
-    def __init__(self, **kwargs):
-        """
-        Object attributes can be passed as keywords. A grid can be passed as
-        object, or will be constructed from the Keywords
-
-        rmin, rmax : floats
-            inner and outer radius [cm]
-
-        nr : int
-            grid size
-        """
-
-        # set defaults
-
-        if '_grid' not in kwargs and 'grid' not in kwargs:
-            rmin = kwargs.pop('rmin', 0.1 * au)
-            rmax = kwargs.pop('rmax', 1000 * au)
-            nr = kwargs.pop('nr', 300)
-            ri = np.logspace(np.log10(rmin), np.log10(rmax), nr)
-            self._grid = Grid2(ri)
-
-        for key, value in kwargs.items():
-            if hasattr(self, '_' + key):
-                setattr(self, '_' + key, value)
-            elif hasattr(self, key):
-                setattr(self, key, value)
-            else:
-                raise ValueError(f'{key} is not an attribute of twopoppy object')
-
-        if self.gas_bc is None:
-            self.gas_bc = self.gas_bc_constant_gradient
-        if self.dust_bc is None:
-            self.dust_bc = self.dust_bc_zero_d2g_gradient
+#    def __init__(self, **kwargs):
+#        """
+#        Object attributes can be passed as keywords. A grid can be passed as
+#        object, or will be constructed from the Keywords
+#
+#        rmin, rmax : floats
+#            inner and outer radius [cm]
+#
+#        nr : int
+#            grid size
+#        """
+#
+#        # set defaults
+#
+#        if '_grid' not in kwargs and 'grid' not in kwargs:
+#            rmin = kwargs.pop('rmin', 0.1 * au)
+#            rmax = kwargs.pop('rmax', 1000 * au)
+#            nr = kwargs.pop('nr', 300)
+#            ri = np.logspace(np.log10(rmin), np.log10(rmax), nr)
+#            self._grid = Grid2(ri)
+#
+#        for key, value in kwargs.items():
+#            if hasattr(self, '_' + key):
+#                setattr(self, '_' + key, value)
+#            elif hasattr(self, key):
+#                setattr(self, key, value)
+#            else:
+#                raise ValueError(f'{key} is not an attribute of twopoppy object')
+#
+#        if self.gas_bc is None:
+#            self.gas_bc = self.gas_bc_constant_gradient
+#        if self.dust_bc is None:
+#            self.dust_bc = self.dust_bc_zero_d2g_gradient
 
     def initialize(self):
         """
