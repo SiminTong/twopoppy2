@@ -98,7 +98,6 @@ class Twopoppy_w():
         self._gas_floor = self._floor
         self._CFL = 0.4
         self._leverarm = 3         #lever arm for the magnetised wind
-        self.nu_dw = None
 
         self.gas_bc = None
         self.dust_bc = None
@@ -115,7 +114,7 @@ class Twopoppy_w():
     _stokesregime = 1
     _grid = None
     _cs = None
-    
+    _nu_dw = None
     _hp = None
     _omega = None
     _do_growth = True
@@ -324,16 +323,16 @@ class Twopoppy_w():
             raise ValueError('do_growth must be boolean')
         else:
             self._do_growth = value
-
+    
     def get_nu_dw(self, update =True):
         '''nu_dw = alpha_dw * cs * h'''
         if update:
-            self.nu_dw = self.alpha_dw * self.cs * self.hp
-        return self.nu_dw
+            self._nu_dw = self.alpha_dw * self.cs * self.hp
+        return self._nu_dw
 
     nu_dw = property(get_nu_dw)
 
-    def get_v_gas_dw(self, update=False):
+    def get_v_gas_dw(self, update=True):
         '''radial velocity by the magnetised wind'''
         if update:
             self._v_gas_dw = -3./2. * self.nu_dw / self.r
