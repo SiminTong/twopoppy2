@@ -64,32 +64,32 @@ class Twopoppy_w():
 
     snapshots = np.hstack((0, np.logspace(2, np.log10(5e6), 50) * year))
     "the times at which to store snapshots"
-
-    M_star = M_sun       #stellar mass [g]
-    sigma_g = None       #dust surface density [g/cm^2]
-    sigma_d = None       #dust surface density [g/cm^2]
-    rho_s = 1.6          #dust material density [g/cm^3]
-    T_gas = None         #gas temperature [K]
-    v_frag = 1000        #fragmentation velocity [cm/s]
-    alpha_gas = 1e-3     #gas viscosity alpha parameter
-    alpha_dw = 1e-3      #gas alpha for disc winds
-    #leverarm = 3         #lever arm for the magnetised wind
-    alpha_diff = 1e-3    #alpha value to determine dust diffusion
-    alpha_turb = 1e-3    #alpha parameter to drive turbulent collisions
-    T_star = 4000        #stellar temperature [K]
-    R_star = 2.5 * R_sun #stellar radius [cm]
-    e_drift = 1.0        #drift efficiency [-]
-    e_stick = 1.0        #sticking probability [-]
-    mu = 2.3             #gas mean molecular weight in m_p [m_p]
-    time = 0.0           #simulation time since beginning [s]
-    fudge_fr = 0.37      #fragmentation size limit fudge factor [-]
-    fudge_dr = 0.55      #drift size limit fudge factor [-]
-    f_mf = 0.75          #mass fraction of large grains in the fragmentation limit [-]
-    f_md = 0.97          #mass fraction of large grains in the drift limit [-]
-    _floor = 1e-100
-    _dust_floor = _floor
-    _gas_floor = _floor
-    _CFL = 0.4
+    def __init__(self):
+        self.M_star = M_sun       #stellar mass [g]
+        self.sigma_g = None       #dust surface density [g/cm^2]
+        self.sigma_d = None       #dust surface density [g/cm^2]
+        self.rho_s = 1.6          #dust material density [g/cm^3]
+        self.T_gas = None         #gas temperature [K]
+        self.v_frag = 1000        #fragmentation velocity [cm/s]
+        self.alpha_gas = 1e-3     #gas viscosity alpha parameter
+        self.alpha_dwalpha_dw = 1e-3      #gas alpha for disc winds
+        self.leverarm = 3         #lever arm for the magnetised wind
+        self.alpha_diff = 1e-3    #alpha value to determine dust diffusion
+        self.alpha_turb = 1e-3    #alpha parameter to drive turbulent collisions
+        self.T_star = 4000        #stellar temperature [K]
+        self.R_star = 2.5 * R_sun #stellar radius [cm]
+        self.e_drift = 1.0        #drift efficiency [-]
+        self.e_stick = 1.0        #sticking probability [-]
+        self.mu = 2.3             #gas mean molecular weight in m_p [m_p]
+        self.time = 0.0           #simulation time since beginning [s]
+        self.fudge_fr = 0.37      #fragmentation size limit fudge factor [-]
+        self.fudge_dr = 0.55      #drift size limit fudge factor [-]
+        self.f_mf = 0.75          #mass fraction of large grains in the fragmentation limit [-]
+        self.f_md = 0.97          #mass fraction of large grains in the drift limit [-]
+        self._floor = 1e-100
+        self._dust_floor = self._floor
+        self._gas_floor = self._floor
+        self._CFL = 0.4
     "explicit: CFL number. Implicit: allowed the relative change in the quantity"
 
     # the attributes belonging to properties
