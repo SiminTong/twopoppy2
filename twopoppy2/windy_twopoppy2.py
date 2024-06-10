@@ -634,7 +634,7 @@ class Twopoppy_w():
         h = np.ones(nr)
         K = self.gas_sources_K #* x
         L = self.gas_sources_L #* x
-        v_gas = self.v_gas_dw/self.r #np.zeros(nr)
+        v_gas = self.v_gas_dw #np.zeros(nr)
 
         u = impl_donorcell_adv_diff_delta(x, D, v_gas, g, h, K, L, u, dt, *self.gas_bc(x, g, u, h))
 
