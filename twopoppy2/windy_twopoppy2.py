@@ -73,7 +73,7 @@ class Twopoppy_w():
     v_frag = 1000        #fragmentation velocity [cm/s]
     alpha_gas = 1e-3     #gas viscosity alpha parameter
     alpha_dw = 1e-3      #gas alpha for disc winds
-    leverarm = 3         #lever arm for the magnetised wind
+    #leverarm = 3         #lever arm for the magnetised wind
     alpha_diff = 1e-3    #alpha value to determine dust diffusion
     alpha_turb = 1e-3    #alpha parameter to drive turbulent collisions
     T_star = 4000        #stellar temperature [K]
@@ -344,8 +344,11 @@ class Twopoppy_w():
         self.alpha_turb = alpha_ss * np.ones_like(self.r)
         self.alpha_dw = alpha_dw * np.ones_like(self.r)
     
-    def set_leverarm(self, leverarm):
-        self.leverarm = leverarm
+    def set_leverarm(self, value):
+        if value is None:
+            self.leverarm = 3
+        else:
+            self.leverarm = value
     
     leverarm= property(set_leverarm)
 
