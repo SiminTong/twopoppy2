@@ -427,7 +427,7 @@ class Twopoppy_w():
         "implicit gas surface density sources (will be multiplied with sig_g) [1 / s]"
         if update:
             #self._gas_sources_L = np.zeros_like(self.r)
-            self._gas_sources_L = -3 * self.nu_dw/(4 * (self.leverarm-1) * self.r**2)
+            self._gas_sources_L = -3 * self.nu_dw/(4 * (self._leverarm-1) * self.r**2)
         return self._gas_sources_L
     gas_sources_L = property(get_gas_sources_L)
 
