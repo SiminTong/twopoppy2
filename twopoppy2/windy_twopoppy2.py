@@ -97,7 +97,7 @@ class Twopoppy_w():
         self._dust_floor = self._floor
         self._gas_floor = self._floor
         self._CFL = 0.4
-        self.leverarm = 3         #lever arm for the magnetised wind
+        self._leverarm = 3         #lever arm for the magnetised wind
 
         self.gas_bc = None
         self.dust_bc = None
@@ -359,14 +359,13 @@ class Twopoppy_w():
         self.alpha_turb = alpha_ss * np.ones_like(self.r)
         self.alpha_dw = alpha_dw * np.ones_like(self.r)
     
-    @leverarm.setter
-    def leverarm(self, value):
-        if value is None:
-            self.leverarm = 3
-        else:
-            self.leverarm = value
+    #@leverarm.setter
+    #def leverarm(self, value):
+    #    if value is None:
+    #        self._leverarm = 3
+    #    else:
+    #        self._leverarm = value
     
-    leverarm= property(leverarm)
 
     def get_omega(self, update=False):
         "Keplerian frequency [1/s]"
