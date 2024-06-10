@@ -98,6 +98,7 @@ class Twopoppy_w():
         self._gas_floor = self._floor
         self._CFL = 0.4
         self._leverarm = 3         #lever arm for the magnetised wind
+        self.nu_dw = None
 
         self.gas_bc = None
         self.dust_bc = None
@@ -114,7 +115,7 @@ class Twopoppy_w():
     _stokesregime = 1
     _grid = None
     _cs = None
-    _nu_dw = None
+    
     _hp = None
     _omega = None
     _do_growth = True
