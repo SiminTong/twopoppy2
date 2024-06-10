@@ -80,8 +80,7 @@ class Twopoppy_w():
         self.T_gas = None         #gas temperature [K]
         self.v_frag = 1000        #fragmentation velocity [cm/s]
         self.alpha_gas = 1e-3     #gas viscosity alpha parameter
-        self.alpha_dwalpha_dw = 1e-3      #gas alpha for disc winds
-        self.leverarm = 3         #lever arm for the magnetised wind
+        self.alpha_dw = 1e-3      #gas alpha for disc winds
         self.alpha_diff = 1e-3    #alpha value to determine dust diffusion
         self.alpha_turb = 1e-3    #alpha parameter to drive turbulent collisions
         self.T_star = 4000        #stellar temperature [K]
@@ -98,6 +97,7 @@ class Twopoppy_w():
         self._dust_floor = self._floor
         self._gas_floor = self._floor
         self._CFL = 0.4
+        self.leverarm = 3         #lever arm for the magnetised wind
 
         self.gas_bc = None
         self.dust_bc = None
