@@ -231,7 +231,7 @@ def t_acc0(sim, r_c0=60):
     t_acc0  = r_c0/ (3*cs[r_c0_ind]*asp[r_c0_ind]* alpha_tilda[0])
     return t_acc0
 
-def r_ct_func(sim, r_c0=60, t=t):
+def r_ct_func(sim, r_c0=60, t=0):
 
     r_c0 = r_c0 * au
     alpha = sim.alpha_gas
