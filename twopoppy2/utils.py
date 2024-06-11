@@ -5,7 +5,7 @@ from scipy.constants import golden as gr
 from matplotlib.widgets import Slider
 import matplotlib.pyplot as plt
 
-from .constants import au, year
+from .constants import au, year, M_sun
 
 
 def get_powerlaw_dust_distribution(sigma_d, a_max, q=3.5, na=10, a0=None, a1=None):
@@ -211,11 +211,16 @@ def lbp_solution(R, gamma, nu1, mstar, mdisk, RC0, time=0):
     else:
         return sig_g.cgs.value, RC1.cgs.value
 
-
-def t_acc0(sim, r_c0=60):
-
+def t_acc0(sim, r_c0=60*au):
+    '''
+    compute the time scale 
+    
+    input:
+    ----------
+    sim: class, Twopoppy()
+    r_c0: float, initial characteristic radius (units: cm) 
+    '''
     r = sim.r
-    r_c0 = r_c0 * au
     
     alpha = sim.alpha_gas
     alpha_dw = sim.alpha_dw
@@ -225,33 +230,50 @@ def t_acc0(sim, r_c0=60):
     
     cs = sim.cs
     hp = sim.hp
-    asp = sim.hp/sim.r
+    asp = hp/r
     
     
     t_acc0  = r_c0/ (3*cs[r_c0_ind]*asp[r_c0_ind]* alpha_tilda)
     return t_acc0
 
-def r_ct_func(sim, r_c0=60, t=0):
+def r_ct_func(sim, r_c0=60*au, t=0):
 
-    r_c0 = r_c0 * au
+    '''
+    compute how the characteristic radius change with time
+
+    input:
+    ----------
+    sim: class, Twopoppy()
+    r_c0: float, initial characteristic radius (units: cm) 
+    t: time (units: s)
+    '''
+
     alpha = sim.alpha_gas
     alpha_dw = sim.alpha_dw
     alpha_phi = alpha_dw/alpha
     return r_c0 * (1+ t/((1+alpha_phi)*t_acc0(sim)))
 
-def Tabone22_analytical(sim, r_c0 = 60, mode='wind', t=0):
-    '''mode can be wind/ hybrid/ sigma_dep
+
+def Tabone22_solution(sim, r_c0 = 60*au, mode='wind', t=0):
+    '''
+    Wind-driven disc evolution from Tabone+2022
+
     
     input:
     --------
-    r_c0: float, initial characteristic radius;
 
+    sim: class, Twopoppy()
+    r_c0: float, initial characteristic radius (units: cm) 
+
+    mode: how the disc evolution is drive:
+    by pure wind: "wind" (constant magnetic fields)
+                  "sigma_dep" (include the evolution of magnetic fields)
+    simultaneously by wind and viscosity: "hybrid"
     
+    t: time (units: s)
     '''
-    
-    M_0 = (np.pi * np.diff(sim.ri**2) * sim.data['sigma_g'][0]).sum()  # inital disc mass 
-    #r_c0 = sim.ini.gas.SigmaRc
-    r_c0 = r_c0 * au
+
+    M_0 = (2 * np.pi * sim.r * (sim.ri[1:]-sim.ri[:-1]) * sim.sigma_g).sum()
     alpha = sim.alpha_gas
     alpha_dw = sim.alpha_dw
     leverarm = sim._leverarm
@@ -271,18 +293,17 @@ def Tabone22_analytical(sim, r_c0 = 60, mode='wind', t=0):
 
     #r_c0_ind = np.argmin(np.abs(r-r_c0))
     t_acc  = t_acc0(sim, r_c0 = r_c0) #r_c/ (3*cs[r_c_ind]*asp[r_c_ind]* alpha_tilda[0]) # here we assume alpha and alpha_dw are constants
-    r_ct   = r_ct_func(sim,r_c0 = r_c0, t=t)
+    
 
     if mode == 'wind':
         sigma = M_0/(2*np.pi*r_c0**2) * np.exp(-t/2/t_acc) * (r/r_c0)**(-1+ksi) * np.exp(-r/r_c0) 
     elif mode == 'hybrid':
+        r_ct   = r_ct_func(sim,r_c0 = r_c0, t=t)
         sigma = M_0/(2*np.pi*r_c0**2) * (1 + t/((1+alpha_phi)* t_acc)) ** (-1/2*(alpha_phi+2*ksi+5))  * (r/r_ct)**(-1+ksi) * np.exp(-r/r_ct)# here we assume alpha and alpha_dw are constants 
     elif mode == 'sigma_dep':
+        r_ct   = r_ct_func(sim,r_c0 = r_c0, t=t)
         sigma = M_0/(2*np.pi*r_c0**2) * (1- omega * t/2/t_acc) ** (1/omega) * (r/r_ct)**(-1+ksi) * np.exp(-r/r_ct)
     return sigma
-
-
-
 
 
 class Widget():
