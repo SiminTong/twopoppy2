@@ -137,36 +137,29 @@ def lbp_solution(R, gamma, nu1, mstar, mdisk, RC0, time=0):
     Arguments:
     ----------
 
-    R : array
-        radius array
+    R : array,  radius array
+    
+    gamma : float, viscosity exponent
 
-    gamma : float
-        viscosity exponent
+    nu1 : float, viscosity at R[0]
 
-    nu1 : float
-        viscosity at R[0]
+    mstar : float, stellar mass
 
-    mstar : float
-        stellar mass
+    mdisk : float, disk mass at t=0
 
-    mdisk : float
-        disk mass at t=0
-
-    RC0 : float
-        critical radius at t=0
+    RC0 : float, critical radius at t=0
 
     Keywords:
     ---------
 
-    time : float
-        physical "age" of the analytical solution
+    time : float, physical "age" of the analytical solution
 
     Output:
     -------
     sig_g,RC(t)
 
     sig_g : array
-        gas surface density, with or without unit, depending on input
+    gas surface density, with or without unit, depending on input
 
     RC : the critical radius
 
@@ -217,6 +210,79 @@ def lbp_solution(R, gamma, nu1, mstar, mdisk, RC0, time=0):
         return sig_g, RC1
     else:
         return sig_g.cgs.value, RC1.cgs.value
+
+
+def t_acc0(sim, r_c0=60):
+
+    r = sim.r
+    r_c0 = r_c0 * au
+    
+    alpha = sim.alpha_gas
+    alpha_dw = sim.alpha_dw
+    alpha_tilda = alpha + alpha_dw
+
+    r_c0_ind = np.argmin(np.abs(r-r_c0))
+    
+    cs = sim.cs
+    hp = sim.hp
+    asp = sim.hp/sim.r
+    
+    
+    t_acc0  = r_c0/ (3*cs[r_c0_ind]*asp[r_c0_ind]* alpha_tilda[0])
+    return t_acc0
+
+def r_ct_func(sim, r_c0=60, t=t):
+
+    r_c0 = r_c0 * au
+    alpha = sim.alpha_gas
+    alpha_dw = sim.alpha_dw
+    alpha_phi = alpha_dw/alpha
+    return r_c0 * (1+ t/((1+alpha_phi[0])*t_acc0(sim)))
+
+def Tabone22_analytical(sim, r_c0 = 60, mode='wind', t=0):
+    '''mode can be wind/ hybrid/ sigma_dep
+    
+    input:
+    --------
+    r_c0: float, initial characteristic radius;
+
+    
+    '''
+    
+    M_0 = (np.pi * np.diff(sim.ri**2) * sim.data['sigma_g'][0]).sum()  # inital disc mass 
+    #r_c0 = sim.ini.gas.SigmaRc
+    r_c0 = r_c0 * au
+    alpha = sim.alpha_gas
+    alpha_dw = sim.alpha_dw
+    leverarm = sim._leverarm
+    omega = 0 # describe how the magnetic field changes with time
+
+    if mode != 'wind':
+        alpha_tilda = alpha + alpha_dw
+        alpha_phi = alpha_dw/alpha
+    else:
+        pass
+    ksi =  1/(2*(leverarm-1)) * (alpha_dw/(alpha_dw+alpha)) # when lambda>=2
+    #nu = sim._nu
+    r = sim.r
+    #cs = sim.cs
+    #hp = sim.hp
+    #asp = sim.hp/sim.r
+
+    #r_c0_ind = np.argmin(np.abs(r-r_c0))
+    t_acc  = t_acc0(sim, r_c0 = r_c0) #r_c/ (3*cs[r_c_ind]*asp[r_c_ind]* alpha_tilda[0]) # here we assume alpha and alpha_dw are constants
+    r_ct   = r_ct_func(sim,r_c0 = r_c0, t=t)
+
+    if mode == 'wind':
+        sigma = M_0/(2*np.pi*r_c0**2) * np.exp(-t/2/t_acc) * (r/r_c0)**(-1+ksi) * np.exp(-r/r_c0) 
+    elif mode == 'hybrid':
+        sigma = M_0/(2*np.pi*r_c0**2) * (1 + t/((1+alpha_phi[0])* t_acc)) ** (-1/2*(alpha_phi[0]+2*ksi+5))  * (r/r_ct)**(-1+ksi) * np.exp(-r/r_ct)# here we assume alpha and alpha_dw are constants 
+    elif mode == 'sigma_dep':
+        sigma = M_0/(2*np.pi*r_c0**2) * (1- omega * t/2/t_acc) ** (1/omega) * (r/r_ct)**(-1+ksi) * np.exp(-r/r_ct)
+    return sigma
+
+
+
 
 
 class Widget():

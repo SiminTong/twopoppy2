@@ -128,43 +128,6 @@ class Twopoppy_w():
     _v_bar = None
     _v_bar_i = None
 
-    #gas_bc = None
-    #dust_bc = None
-
-#    def __init__(self, **kwargs):
-#        """
-#        Object attributes can be passed as keywords. A grid can be passed as
-#        object, or will be constructed from the Keywords
-#
-#        rmin, rmax : floats
-#            inner and outer radius [cm]
-#
-#        nr : int
-#            grid size
-#        """
-#
-#        # set defaults
-#
-#        if '_grid' not in kwargs and 'grid' not in kwargs:
-#            rmin = kwargs.pop('rmin', 0.1 * au)
-#            rmax = kwargs.pop('rmax', 1000 * au)
-#            nr = kwargs.pop('nr', 300)
-#            ri = np.logspace(np.log10(rmin), np.log10(rmax), nr)
-#            self._grid = Grid2(ri)
-#
-#        for key, value in kwargs.items():
-#            if hasattr(self, '_' + key):
-#                setattr(self, '_' + key, value)
-#            elif hasattr(self, key):
-#                setattr(self, key, value)
-#            else:
-#                raise ValueError(f'{key} is not an attribute of twopoppy object')
-#
-#        if self.gas_bc is None:
-#            self.gas_bc = self.gas_bc_constant_gradient
-#        if self.dust_bc is None:
-#            self.dust_bc = self.dust_bc_zero_d2g_gradient
-
     def initialize(self):
         """
         This makes sure everything is defined: it will initialize all arrays,
@@ -351,21 +314,6 @@ class Twopoppy_w():
             raise ValueError('evolve_gas must be boolean')
         else:
             self._evolve_gas = value
-
-    #def set_all_alpha(self, alpha_ss, alpha_dw):
-    #    "helper to set all alphas to the same values"
-    #    self.alpha_gas = alpha_ss * np.ones_like(self.r)
-    #    self.alpha_diff = alpha_ss * np.ones_like(self.r)
-    #    self.alpha_turb = alpha_ss * np.ones_like(self.r)
-    #    self.alpha_dw = alpha_dw * np.ones_like(self.r)
-    
-    #@leverarm.setter
-    #def leverarm(self, value):
-    #    if value is None:
-    #        self._leverarm = 3
-    #    else:
-    #        self._leverarm = value
-    
 
     def get_omega(self, update=False):
         "Keplerian frequency [1/s]"
