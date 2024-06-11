@@ -254,7 +254,7 @@ def r_ct_func(sim, r_c0=60*au, t=0):
     return r_c0 * (1+ t/((1+alpha_phi)*t_acc0(sim)))
 
 
-def Tabone22_solution(sim, r_c0 = 60*au, mode='wind', t=0):
+def Tabone22_solution(sim, r_c0 = 60*au, M_0=0.01*M_sun, mode='wind', t=0):
     '''
     Wind-driven disc evolution from Tabone+2022
 
@@ -264,7 +264,7 @@ def Tabone22_solution(sim, r_c0 = 60*au, mode='wind', t=0):
 
     sim: class, Twopoppy()
     r_c0: float, initial characteristic radius (units: cm) 
-
+    M_0: float, initial disc mass (units: g)
     mode: how the disc evolution is drive:
     by pure wind: "wind" (constant magnetic fields)
                   "sigma_dep" (include the evolution of magnetic fields)
@@ -273,25 +273,17 @@ def Tabone22_solution(sim, r_c0 = 60*au, mode='wind', t=0):
     t: time (units: s)
     '''
 
-    M_0 = (2 * np.pi * sim.r * (sim.ri[1:]-sim.ri[:-1]) * sim.sigma_g).sum()
     alpha = sim.alpha_gas
     alpha_dw = sim.alpha_dw
     leverarm = sim._leverarm
     omega = 0 # describe how the magnetic field changes with time
 
     if mode != 'wind':
-        #alpha_tilda = alpha + alpha_dw
         alpha_phi = alpha_dw/alpha
     else:
         pass
     ksi =  1/(2*(leverarm-1)) * (alpha_dw/(alpha_dw+alpha)) # when lambda>=2
-    #nu = sim._nu
     r = sim.r
-    #cs = sim.cs
-    #hp = sim.hp
-    #asp = sim.hp/sim.r
-
-    #r_c0_ind = np.argmin(np.abs(r-r_c0))
     t_acc  = t_acc0(sim, r_c0 = r_c0) #r_c/ (3*cs[r_c_ind]*asp[r_c_ind]* alpha_tilda[0]) # here we assume alpha and alpha_dw are constants
     
 
