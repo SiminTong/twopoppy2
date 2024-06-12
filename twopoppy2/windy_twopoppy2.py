@@ -98,8 +98,8 @@ class Twopoppy_w():
         self.fudge_dr = 0.55         #drift size limit fudge factor [-]
         self.f_mf = 0.75             #mass fraction of large grains in the fragmentation limit [-]
         self.f_md = 0.97             #mass fraction of large grains in the drift limit [-]
-        self.thermal='h0'            #how to define the thermal structures: h0 and star
-        self.h_0 = 0.03
+        self.thermal = None            #how to define the thermal structures: h0 and star
+        self.h_0 = 0.03 * au         #gas scaleheight at 1 au
         self._floor = 1e-100
         self._dust_floor = self._floor
         self._gas_floor = self._floor
