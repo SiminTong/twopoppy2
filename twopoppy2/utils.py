@@ -211,7 +211,7 @@ def lbp_solution(R, gamma, nu1, mstar, mdisk, RC0, time=0):
     else:
         return sig_g.cgs.value, RC1.cgs.value
 
-def t_acc0(sim, r_c0=60*au):
+def t_acc0(sim):
     '''
     compute the time scale 
     
@@ -235,7 +235,7 @@ def t_acc0(sim, r_c0=60*au):
     t_acc0  = r_c/ (3*cs[r_c0_ind]*asp[r_c0_ind]* alpha_tilda)
     return t_acc0
 
-def r_ct_func(sim, r_c0=60*au, t=0):
+def r_ct_func(sim, t=0):
 
     '''
     compute how the characteristic radius change with time
@@ -254,7 +254,7 @@ def r_ct_func(sim, r_c0=60*au, t=0):
     return r_c * (1+ t/((1+alpha_phi)*t_acc0(sim)))
 
 
-def Tabone22_solution(sim, M_0=0.01*M_sun, mode='wind', t=0):
+def Tabone22_solution(sim, mode='wind', t=0):
     '''
     Wind-driven disc evolution from Tabone+2022
 
@@ -276,7 +276,9 @@ def Tabone22_solution(sim, M_0=0.01*M_sun, mode='wind', t=0):
     alpha = sim.alpha_gas
     alpha_dw = sim.alpha_dw
     leverarm = sim._leverarm
+    M_0 = sim.M_disk
     r_c0 = sim.rc
+    r = sim.r
     omega = 0 # describe how the magnetic field changes with time
 
     if mode != 'wind':
@@ -284,7 +286,6 @@ def Tabone22_solution(sim, M_0=0.01*M_sun, mode='wind', t=0):
     else:
         pass
     ksi =  1/(2*(leverarm-1)) * (alpha_dw/(alpha_dw+alpha)) # when lambda>=2
-    r = sim.r
     t_acc  = t_acc0(sim) #r_c/ (3*cs[r_c_ind]*asp[r_c_ind]* alpha_tilda[0]) # here we assume alpha and alpha_dw are constants
     
 

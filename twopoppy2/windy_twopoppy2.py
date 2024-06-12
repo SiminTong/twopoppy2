@@ -83,7 +83,7 @@ class Twopoppy_w():
         self.d2g = 0.01              #dust-to-gas surface density ratio
         self.T_gas = None            #gas temperature [K]
         self.v_frag = 1000           #fragmentation velocity [cm/s]
-        self.r_c = 30 * au           #characteristic radius [cm]
+        self.rc = 30 * au           #characteristic radius [cm]
         self.alpha_gas = 1e-3        #gas viscosity alpha parameter
         self.alpha_dw = 1e-3         #gas alpha for disc winds
         self.alpha_diff = 1e-3       #alpha value to determine dust diffusion
@@ -116,7 +116,7 @@ class Twopoppy_w():
             self.dust_bc = self.dust_bc_zero_d2g_gradient
 
         if (self.sigma_g is None) & (self.sigma_d is None):
-            self.sigma_g = self.M_disk/ (2*np.pi*self.r_c**2) * (self.r/ self.r_c)**(-1) * np.exp(-self.r/self.r_c)
+            self.sigma_g = self.M_disk/ (2*np.pi*self.rc**2) * (self.r/ self.rc)**(-1) * np.exp(-self.r/self.rc)
             self.sigma_d = self.d2g * self.sigma_g
         
         if self.T_gas is None:
