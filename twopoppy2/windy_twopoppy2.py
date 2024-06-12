@@ -83,7 +83,7 @@ class Twopoppy_w():
         self.d2g = 0.01              #dust-to-gas surface density ratio
         self.T_gas = None            #gas temperature [K]
         self.v_frag = 1000           #fragmentation velocity [cm/s]
-        self.rc = None          #characteristic radius [cm]
+        self.rc = 30 * au            #characteristic radius [cm]
         self.alpha_gas = 1e-3        #gas viscosity alpha parameter
         self.alpha_dw = 1e-3         #gas alpha for disc winds
         self.alpha_diff = 1e-3       #alpha value to determine dust diffusion
@@ -114,19 +114,8 @@ class Twopoppy_w():
             self.gas_bc = self.gas_bc_constant_gradient
         if self.dust_bc is None:
             self.dust_bc = self.dust_bc_zero_d2g_gradient
-
-        if (self.sigma_g is None) & (self.sigma_d is None):
-            self.sigma_g = self.M_disk/ (2*np.pi*self.rc**2) * (self.r/ self.rc)**(-1) * np.exp(-self.r/self.rc)
-            self.sigma_d = self.d2g * self.sigma_g
         
-        if self.T_gas is None:
-            #if self.thermal == 'h0':
-            self.omega2_1au = G * self.M_star / (1*au)**3 # squared orbital angular velocity at 1 au
-            self.T_0 = self.h_0 **2 * self.omega2_1au * m_p * self.mu/ k_b
-            self.T_gas = self.T_0 * (self.r/(1*au)) ** (-self.q)
-            #if self.thermal == 'star':
-            #    self.L_star = 4 * np.pi * self.R_star**2 * sigma_sb * self.T_star **4
-            #    self.T_gas = ( 1.25e-2 * self.L_star / (np.pi * self.r**2 * sigma_sb) )**0.25
+            
 
     # the attributes belonging to properties
 
@@ -156,6 +145,21 @@ class Twopoppy_w():
         default update functions so that all arrays are set and up-to-date.
         It also initializes the output arrays and sets the time to zero.
         """
+        if (self.sigma_g is None) & (self.sigma_d is None):
+            self.sigma_g = self.M_disk/ (2*np.pi*self.rc**2) * (self.r/ self.rc)**(-1) * np.exp(-self.r/self.rc)
+            self.sigma_d = self.d2g * self.sigma_g
+
+        if self.T_gas is None:
+        #if self.thermal == 'h0':
+            self.omega2_1au = G * self.M_star / (1*au)**3 # squared orbital angular velocity at 1 au
+            self.T_0 = self.h_0 **2 * self.omega2_1au * m_p * self.mu/ k_b
+            self.T_gas = self.T_0 * (self.r/(1*au)) ** (-self.q)
+
+        #if self.thermal == 'star':
+            #    self.L_star = 4 * np.pi * self.R_star**2 * sigma_sb * self.T_star **4
+            #    self.T_gas = ( 1.25e-2 * self.L_star / (np.pi * self.r**2 * sigma_sb) )**0.25
+
+
         for key in ['T_gas', 'sigma_d', 'sigma_g']:
             if getattr(self, key) is None:
                 raise ValueError(f'"{key}" needs to be set!')
