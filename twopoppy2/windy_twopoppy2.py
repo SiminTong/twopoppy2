@@ -3,7 +3,7 @@ from collections import namedtuple
 import numpy as np
 
 from .fortran import impl_donorcell_adv_diff_delta, advect, diffuse
-from .constants import M_sun, R_sun, year, sig_h2, m_p, k_b, G, au
+from .constants import M_sun, R_sun, year, sig_h2, m_p, k_b, G, au, sigma_sb
 
 # named tuples to store results of time steps
 
@@ -73,27 +73,33 @@ class Twopoppy_w():
             ri = np.logspace(np.log10(rmin), np.log10(rmax), nr)
             self._grid = Grid2(ri)
 
-        self.M_star = M_sun       #stellar mass [g]
-        self.sigma_g = None       #dust surface density [g/cm^2]
-        self.sigma_d = None       #dust surface density [g/cm^2]
-        self.rho_s = 1.6          #dust material density [g/cm^3]
-        self.T_gas = None         #gas temperature [K]
-        self.v_frag = 1000        #fragmentation velocity [cm/s]
-        self.r_c = 30 * au        #characteristic radius [cm]
-        self.alpha_gas = 1e-3     #gas viscosity alpha parameter
-        self.alpha_dw = 1e-3      #gas alpha for disc winds
-        self.alpha_diff = 1e-3    #alpha value to determine dust diffusion
-        self.alpha_turb = 1e-3    #alpha parameter to drive turbulent collisions
-        self.T_star = 4000        #stellar temperature [K]
-        self.R_star = 2.5 * R_sun #stellar radius [cm]
-        self.e_drift = 1.0        #drift efficiency [-]
-        self.e_stick = 1.0        #sticking probability [-]
-        self.mu = 2.3             #gas mean molecular weight in m_p [m_p]
-        self.time = 0.0           #simulation time since beginning [s]
-        self.fudge_fr = 0.37      #fragmentation size limit fudge factor [-]
-        self.fudge_dr = 0.55      #drift size limit fudge factor [-]
-        self.f_mf = 0.75          #mass fraction of large grains in the fragmentation limit [-]
-        self.f_md = 0.97          #mass fraction of large grains in the drift limit [-]
+        self.M_star = 1 * M_sun      #stellar mass [g]
+        self.T_star = 4000           #stellar temperature [K]
+        self.R_star = 2.5 * R_sun    #stellar radius [cm]
+        self.sigma_g = None          #dust surface density [g/cm^2]
+        self.sigma_d = None
+        self.M_disk = 0.01 * M_sun   #dust surface density [g/cm^2]
+        self.rho_s = 1.6             #dust material density [g/cm^3]
+        self.d2g = 0.01              #dust-to-gas surface density ratio
+        self.T_gas = None            #gas temperature [K]
+        self.v_frag = 1000           #fragmentation velocity [cm/s]
+        self.r_c = 30 * au           #characteristic radius [cm]
+        self.alpha_gas = 1e-3        #gas viscosity alpha parameter
+        self.alpha_dw = 1e-3         #gas alpha for disc winds
+        self.alpha_diff = 1e-3       #alpha value to determine dust diffusion
+        self.alpha_turb = 1e-3       #alpha parameter to drive turbulent collisions
+        
+        self.e_drift = 1.0           #drift efficiency [-]
+        self.e_stick = 1.0           #sticking probability [-]
+        self.mu = 2.3                #gas mean molecular weight in m_p [m_p]
+        self.q  = 0.5                # how the temperature change with radius T(r) = T0 * r **(-q) 
+        self.time = 0.0              #simulation time since beginning [s]
+        self.fudge_fr = 0.37         #fragmentation size limit fudge factor [-]
+        self.fudge_dr = 0.55         #drift size limit fudge factor [-]
+        self.f_mf = 0.75             #mass fraction of large grains in the fragmentation limit [-]
+        self.f_md = 0.97             #mass fraction of large grains in the drift limit [-]
+        self.thermal='h0'            #how to define the thermal structures: h0 and star
+        self.h_0 = 0.03
         self._floor = 1e-100
         self._dust_floor = self._floor
         self._gas_floor = self._floor
@@ -108,6 +114,19 @@ class Twopoppy_w():
             self.gas_bc = self.gas_bc_constant_gradient
         if self.dust_bc is None:
             self.dust_bc = self.dust_bc_zero_d2g_gradient
+
+        if (self.sigma_g == None) & (self.sigma_d==None):
+            self.sigma_g = self.M_disk/ (2*np.pi*self.r_c**2) * (self.r/ self.r_c)**(-1) * np.exp(-self.r/self.r_c)
+            self.sigma_d = self.d2g * self.sigma_g
+        
+        if self.thermal == 'h0':
+            omega2_1au = G * self.M_star / (1*au)**3 # squared orbital angular velocity at 1 au
+            T_0 = self.h_0 **2 * omega2_1au * m_p * self.mu/ k_b
+            self.T_gas = T_0 * (self.r/(1*au)) ** (-self.q)
+        elif self.thermal == 'star':
+            L_star = 4 * np.pi * self.R_star**2 * sigma_sb * self.T_star **4
+            self.T_gas = ( 1.25e-2 * L_star / (np.pi * self.r**2 * sigma_sb) )**0.25
+
     # the attributes belonging to properties
 
     _a_0 = 1e-5
