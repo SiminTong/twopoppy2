@@ -79,7 +79,7 @@ class Twopoppy_w():
         self.rho_s = 1.6          #dust material density [g/cm^3]
         self.T_gas = None         #gas temperature [K]
         self.v_frag = 1000        #fragmentation velocity [cm/s]
-        self.r_c = 30 * au        # characteristic radius [cm]
+        self.r_c = 30 * au        #characteristic radius [cm]
         self.alpha_gas = 1e-3     #gas viscosity alpha parameter
         self.alpha_dw = 1e-3      #gas alpha for disc winds
         self.alpha_diff = 1e-3    #alpha value to determine dust diffusion

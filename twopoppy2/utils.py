@@ -221,19 +221,18 @@ def t_acc0(sim, r_c0=60*au):
     r_c0: float, initial characteristic radius (units: cm) 
     '''
     r = sim.r
-    
+    cs = sim.cs
+    hp = sim.hp
+    asp = hp/r
+    r_c = sim.rc
+
     alpha = sim.alpha_gas
     alpha_dw = sim.alpha_dw
     alpha_tilda = alpha + alpha_dw
 
-    r_c0_ind = np.argmin(np.abs(r-r_c0))
+    r_c0_ind = np.argmin(np.abs(r-r_c))
     
-    cs = sim.cs
-    hp = sim.hp
-    asp = hp/r
-    
-    
-    t_acc0  = r_c0/ (3*cs[r_c0_ind]*asp[r_c0_ind]* alpha_tilda)
+    t_acc0  = r_c/ (3*cs[r_c0_ind]*asp[r_c0_ind]* alpha_tilda)
     return t_acc0
 
 def r_ct_func(sim, r_c0=60*au, t=0):
@@ -251,10 +250,11 @@ def r_ct_func(sim, r_c0=60*au, t=0):
     alpha = sim.alpha_gas
     alpha_dw = sim.alpha_dw
     alpha_phi = alpha_dw/alpha
-    return r_c0 * (1+ t/((1+alpha_phi)*t_acc0(sim)))
+    r_c = sim.rc
+    return r_c * (1+ t/((1+alpha_phi)*t_acc0(sim)))
 
 
-def Tabone22_solution(sim, r_c0 = 60*au, M_0=0.01*M_sun, mode='wind', t=0):
+def Tabone22_solution(sim, M_0=0.01*M_sun, mode='wind', t=0):
     '''
     Wind-driven disc evolution from Tabone+2022
 
@@ -276,6 +276,7 @@ def Tabone22_solution(sim, r_c0 = 60*au, M_0=0.01*M_sun, mode='wind', t=0):
     alpha = sim.alpha_gas
     alpha_dw = sim.alpha_dw
     leverarm = sim._leverarm
+    r_c0 = sim.rc
     omega = 0 # describe how the magnetic field changes with time
 
     if mode != 'wind':
@@ -284,16 +285,16 @@ def Tabone22_solution(sim, r_c0 = 60*au, M_0=0.01*M_sun, mode='wind', t=0):
         pass
     ksi =  1/(2*(leverarm-1)) * (alpha_dw/(alpha_dw+alpha)) # when lambda>=2
     r = sim.r
-    t_acc  = t_acc0(sim, r_c0 = r_c0) #r_c/ (3*cs[r_c_ind]*asp[r_c_ind]* alpha_tilda[0]) # here we assume alpha and alpha_dw are constants
+    t_acc  = t_acc0(sim) #r_c/ (3*cs[r_c_ind]*asp[r_c_ind]* alpha_tilda[0]) # here we assume alpha and alpha_dw are constants
     
 
     if mode == 'wind':
         sigma = M_0/(2*np.pi*r_c0**2) * np.exp(-t/2/t_acc) * (r/r_c0)**(-1+ksi) * np.exp(-r/r_c0) 
     elif mode == 'hybrid':
-        r_ct   = r_ct_func(sim,r_c0 = r_c0, t=t)
+        r_ct   = r_ct_func(sim, t=t)
         sigma = M_0/(2*np.pi*r_c0**2) * (1 + t/((1+alpha_phi)* t_acc)) ** (-1/2*(alpha_phi+2*ksi+5))  * (r/r_ct)**(-1+ksi) * np.exp(-r/r_ct)# here we assume alpha and alpha_dw are constants 
     elif mode == 'sigma_dep':
-        r_ct   = r_ct_func(sim,r_c0 = r_c0, t=t)
+        r_ct   = r_ct_func(sim, t=t)
         sigma = M_0/(2*np.pi*r_c0**2) * (1- omega * t/2/t_acc) ** (1/omega) * (r/r_ct)**(-1+ksi) * np.exp(-r/r_ct)
     return sigma
 
