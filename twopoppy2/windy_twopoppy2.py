@@ -115,11 +115,11 @@ class Twopoppy_w():
         if self.dust_bc is None:
             self.dust_bc = self.dust_bc_zero_d2g_gradient
 
-        if (self.sigma_g == None) & (self.sigma_d==None):
+        if (self.sigma_g is None) & (self.sigma_d is None):
             self.sigma_g = self.M_disk/ (2*np.pi*self.r_c**2) * (self.r/ self.r_c)**(-1) * np.exp(-self.r/self.r_c)
             self.sigma_d = self.d2g * self.sigma_g
         
-        if self.T_gas == None:
+        if self.T_gas is None:
             if self.thermal == 'h0':
                  omega2_1au = G * self.M_star / (1*au)**3 # squared orbital angular velocity at 1 au
                  T_0 = self.h_0 **2 * omega2_1au * m_p * self.mu/ k_b
