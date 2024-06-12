@@ -8,3 +8,4 @@ k_b    = c.k_B.cgs.value
 m_p    = c.m_p.cgs.value
 year   = (1. * u.year).cgs.value
 sig_h2 = 2e-15
+sigma_sb = 5.6703744191844314e-05 # units:cgs
