@@ -121,8 +121,8 @@ class Twopoppy_w():
         
         if self.T_gas is None:
             #if self.thermal == 'h0':
-            #     self.omega2_1au = G * self.M_star / (1*au)**3 # squared orbital angular velocity at 1 au
-            #    self.T_0 = self.h_0 **2 * self.omega2_1au * m_p * self.mu/ k_b
+            self.omega2_1au = G * self.M_star / (1*au)**3 # squared orbital angular velocity at 1 au
+            self.T_0 = self.h_0 **2 * self.omega2_1au * m_p * self.mu/ k_b
             self.T_gas = self.T_0 * (self.r/(1*au)) ** (-self.q)
             #if self.thermal == 'star':
             #    self.L_star = 4 * np.pi * self.R_star**2 * sigma_sb * self.T_star **4
