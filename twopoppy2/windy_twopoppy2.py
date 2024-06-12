@@ -119,13 +119,14 @@ class Twopoppy_w():
             self.sigma_g = self.M_disk/ (2*np.pi*self.r_c**2) * (self.r/ self.r_c)**(-1) * np.exp(-self.r/self.r_c)
             self.sigma_d = self.d2g * self.sigma_g
         
-        if self.thermal == 'h0':
-            omega2_1au = G * self.M_star / (1*au)**3 # squared orbital angular velocity at 1 au
-            T_0 = self.h_0 **2 * omega2_1au * m_p * self.mu/ k_b
-            self.T_gas = T_0 * (self.r/(1*au)) ** (-self.q)
-        elif self.thermal == 'star':
-            L_star = 4 * np.pi * self.R_star**2 * sigma_sb * self.T_star **4
-            self.T_gas = ( 1.25e-2 * L_star / (np.pi * self.r**2 * sigma_sb) )**0.25
+        if self.T_gas == None:
+            if self.thermal == 'h0':
+                 omega2_1au = G * self.M_star / (1*au)**3 # squared orbital angular velocity at 1 au
+                T_0 = self.h_0 **2 * omega2_1au * m_p * self.mu/ k_b
+                self.T_gas = T_0 * (self.r/(1*au)) ** (-self.q)
+            if self.thermal == 'star':
+                L_star = 4 * np.pi * self.R_star**2 * sigma_sb * self.T_star **4
+                self.T_gas = ( 1.25e-2 * L_star / (np.pi * self.r**2 * sigma_sb) )**0.25
 
     # the attributes belonging to properties
 
