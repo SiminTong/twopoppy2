@@ -1,6 +1,6 @@
 from collections import namedtuple
-
 import numpy as np
+import pickle
 
 from .fortran import impl_donorcell_adv_diff_delta, advect, diffuse
 from .constants import M_sun, R_sun, year, sig_h2, m_p, k_b, G, au, sigma_sb
@@ -105,6 +105,9 @@ class Twopoppy_w():
         self._gas_floor = self._floor
         self._CFL = 0.4
         self._leverarm = 3         #lever arm for the magnetised wind
+        self._save= False
+        self._save_loc = None
+        self._save_name= None
 
         self.snapshots = None
 
@@ -162,6 +165,11 @@ class Twopoppy_w():
 
         if self.snapshots is None:
             self.snapshots = np.linspace(0, 1e6, 10) * year
+
+        if self._save == True:
+            if (self._save_loc is None) or (self._save_name is None):
+                msg ='Please set the saving location/ file name'
+                print(msg)
         #for key in ['T_gas', 'sigma_d', 'sigma_g']:
         #    if getattr(self, key) is None:
         #        raise ValueError(f'"{key}" needs to be set!')
@@ -743,5 +751,11 @@ class Twopoppy_w():
             print(f'\rRunning ... {i_snap / (len(self.snapshots) - 1) * 100:.1f}%', end='', flush=True)
 
         print('\r------ DONE! ------')
+        
+        # save the output data as pkl
+        if self._save == True:
+            file = open(self._save_loc+self._save_name+'.pkl', 'wb')
+            pickle.dump(self.data, file)
+            file.close()
 
     update = [cs, hp, gas_viscosity, rho_mid, gamma]
