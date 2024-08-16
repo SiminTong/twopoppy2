@@ -89,7 +89,7 @@ class Twopoppy_w():
         self.alpha_diff = 1e-3       #alpha value to determine dust diffusion
         self.alpha_turb = 1e-3       #alpha parameter to drive turbulent collisions
         
-        self.e_drift = 1.0           #drift efficiency [-]
+        self.e_drift = 1.0           #drift efficiency [when <1, the dust radial drift velocity is reduced, and the drift-limited particle size is enhanced]
         self.e_stick = 1.0           #sticking probability [-]
         self.mu = 2.3                #gas mean molecular weight in m_p [m_p]
         self.q  = 0.5                # how the temperature change with radius T(r) = T0 * r **(-q) 
@@ -204,6 +204,7 @@ class Twopoppy_w():
         self.data['a_dr'] = None
         self.data['v_bar'] = None
         self.data['time'] = None
+        self.data['r'] = self.r
 
     def update_all(self):
         """Calls all update functions.
@@ -238,7 +239,9 @@ class Twopoppy_w():
         self.get_diffusivity_i(update=True)
 
     def _update_data(self):
-        "update the evolution data arrays"
+        '''update the evolution data arrays
+        16/08: save the radial grid
+        '''
         for key in self.data.keys():
             if hasattr(self, key):
                 self_key = key
@@ -246,12 +249,14 @@ class Twopoppy_w():
                 self_key = '_' + key
             else:
                 raise NameError(f'The attribute {key} cannot be stored as it does not exist')
-
-            _data = getattr(self, self_key)
-            if self.data[key] is None:
-                self.data[key] = _data
-            else:
-                self.data[key] = np.vstack((self.data[key], _data))
+            if key != 'r':
+                _data = getattr(self, self_key)
+                if self.data[key] is None:
+                    self.data[key] = _data
+                else:
+                    self.data[key] = np.vstack((self.data[key], _data))
+            else: 
+                pass
 
     @property
     def a_0(self):
@@ -443,7 +448,8 @@ class Twopoppy_w():
         if update:
             v_0 = self.v_gas / (1.0 + self.St_0**2)
             v_1 = self.v_gas / (1.0 + self.St_1**2)
-            v_eta = self.cs**2 / (2 * self.omega * self.r) * self.gamma
+            # e_drift is added to limited the radial drift efficiency.
+            v_eta = self.cs**2 / (2 * self.omega * self.r) * self.gamma * self.e_drift 
             v_0 = v_0 + 2 / (self.St_0 + 1 / self.St_0) * v_eta
             v_1 = v_1 + 2 / (self.St_1 + 1 / self.St_1) * v_eta
 
