@@ -205,6 +205,7 @@ class Twopoppy_w():
         self.data['v_bar'] = None
         self.data['time'] = None
         self.data['r'] = self.r
+        self.data['ri'] = self.ri
 
     def update_all(self):
         """Calls all update functions.
@@ -249,7 +250,7 @@ class Twopoppy_w():
                 self_key = '_' + key
             else:
                 raise NameError(f'The attribute {key} cannot be stored as it does not exist')
-            if key != 'r':
+            if (key != 'r') | (key != 'ri'):
                 _data = getattr(self, self_key)
                 if self.data[key] is None:
                     self.data[key] = _data
