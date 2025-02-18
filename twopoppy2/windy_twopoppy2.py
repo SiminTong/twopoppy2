@@ -266,7 +266,7 @@ class Twopoppy_w():
 
     @property
     def a_1(self):
-        "small grain size [cm]. Setting this will update St_1."
+        "Large grain size [cm]. Setting this will update St_1."
         return self._a_1
 
     @a_1.setter
