@@ -251,7 +251,7 @@ class Twopoppy_w():
                 self_key = '_' + key
             else:
                 raise NameError(f'The attribute {key} cannot be stored as it does not exist')
-            if (key != 'r') | (key != 'ri') | (key !='T_gas'): # Temperature is time-independent.
+            if (key != 'r') & (key != 'ri') & (key !='T_gas'): # Temperature is time-independent.
                 _data = getattr(self, self_key)
                 if self.data[key] is None:
                     self.data[key] = _data
