@@ -766,6 +766,8 @@ class Twopoppy_w():
         # save the output data as pkl
         if self._save == True:
             file = open(self._save_loc+self._save_name+'.pkl', 'wb')
+            t_len = self.snapshots.shape[0]
+            self.data['time'] == self.data['time'].reshape(t_len,) # reshape the time in output file
             pickle.dump(self.data, file)
             file.close()
 
