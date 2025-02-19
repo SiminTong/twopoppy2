@@ -105,6 +105,7 @@ class Twopoppy_w():
         self._gas_floor = self._floor
         self._CFL = 0.4
         self._leverarm = 3         #lever arm for the magnetised wind
+        self.small_storage = False
         self._save= False
         self._save_loc = None
         self._save_name= None
@@ -255,8 +256,11 @@ class Twopoppy_w():
                 if self.data[key] is None:
                     self.data[key] = _data
                 else:
-                    self.data[key] = np.vstack((self.data[key], _data))
-            else: 
+                    if self.small_storage:
+                        self.data[key] = np.vstack((self.data[key], _data), dtype=np.float32)
+                    else: 
+                        self.data[key] = np.vstack((self.data[key], _data))
+            else:       
                 pass
 
     @property
