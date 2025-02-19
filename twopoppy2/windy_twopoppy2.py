@@ -198,7 +198,7 @@ class Twopoppy_w():
         self.data = {}
         self.data['sigma_g'] = None
         self.data['sigma_d'] = None
-        self.data['T_gas'] = None
+        self.data['T_gas'] = self.T_gas
         self.data['a_1'] = None
         self.data['a_df'] = None
         self.data['a_fr'] = None
@@ -251,7 +251,7 @@ class Twopoppy_w():
                 self_key = '_' + key
             else:
                 raise NameError(f'The attribute {key} cannot be stored as it does not exist')
-            if (key != 'r') | (key != 'ri'):
+            if (key != 'r') | (key != 'ri') | (key !='T_gas'): # Temperature is time-independent.
                 _data = getattr(self, self_key)
                 if self.data[key] is None:
                     self.data[key] = _data
