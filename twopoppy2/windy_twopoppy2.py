@@ -107,6 +107,7 @@ class Twopoppy_w():
         self._leverarm = 3         #lever arm for the magnetised wind
         self.small_storage = False # save data in float32 (True) or float64 (Flase)
         self.vbar_save = True      # save the vbar or not
+        self.a_assess_save = True  # save a_df/a_fr/a_dr or not
         self._save= False
         self._save_loc = None
         self._save_name= None
@@ -125,7 +126,7 @@ class Twopoppy_w():
             
 
     # the attributes belonging to properties
-
+ 
     _a_0 = 1e-5
     _a_1 = 1e-5
     _stokesregime = 1
@@ -772,6 +773,10 @@ class Twopoppy_w():
             self.data['time'] = self.data['time'].reshape(t_len,) # reshape the time in output file
             if self.vbar_save == False:
                 del self.data['v_bar']
+            if self.a_assess_save == False:
+                del self.data['a_df']
+                del self.data['a_fr']
+                del self.data['a_dr']
             pickle.dump(self.data, file)
             file.close()
 
