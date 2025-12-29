@@ -105,7 +105,8 @@ class Twopoppy_w():
         self._gas_floor = self._floor
         self._CFL = 0.4
         self._leverarm = 3         #lever arm for the magnetised wind
-        self.small_storage = False
+        self.small_storage = False # save data in float32 (True) or float64 (Flase)
+        self.vbar_save = True      # save the vbar or not
         self._save= False
         self._save_loc = None
         self._save_name= None
@@ -203,7 +204,10 @@ class Twopoppy_w():
         self.data['a_df'] = None
         self.data['a_fr'] = None
         self.data['a_dr'] = None
-        self.data['v_bar'] = None
+        if self.vbar_save == False:
+            pass
+        else:
+            self.data['v_bar'] = None
         self.data['time'] = None
         self.data['r'] = self.r
         self.data['ri'] = self.ri
@@ -252,7 +256,6 @@ class Twopoppy_w():
             else:
                 raise NameError(f'The attribute {key} cannot be stored as it does not exist')
             if (key != 'r') & (key != 'ri') & (key !='T_gas'): # Temperature is time-independent.
-                _data = getattr(self, self_key)
                 if self.data[key] is None:
                     self.data[key] = _data
                 else:
